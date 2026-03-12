@@ -883,10 +883,25 @@
             gradientColors: ['#4c1d95', '#0ea5e9', '#e11d48']
         };
 
-        try {
-            const savedVisuals = localStorage.getItem('mtw_visual_settings');
-            if (savedVisuals) Object.assign(settings, JSON.parse(savedVisuals));
-        } catch (e) {}
+        function readLocalJSON(key, fallbackValue) {
+            try {
+                const value = localStorage.getItem(key);
+                return value ? JSON.parse(value) : fallbackValue;
+            } catch (error) {
+                console.warn(`Could not read ${key} from localStorage`, error);
+                return fallbackValue;
+            }
+        }
+
+        function writeLocalJSON(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (error) {
+                console.warn(`Could not write ${key} to localStorage`, error);
+            }
+        }
+
+        Object.assign(settings, readLocalJSON('mtw_visual_settings', {}));
 
         const settingsToggle = document.getElementById('settings-toggle');
         const settingsPanel = document.getElementById('settings-panel');
@@ -900,7 +915,7 @@
         const removeGradientColorBtn = document.getElementById('remove-gradient-color');
 
         function persistVisualSettings() {
-            try { localStorage.setItem('mtw_visual_settings', JSON.stringify(settings)); } catch (e) {}
+            writeLocalJSON('mtw_visual_settings', settings);
         }
 
         function applyVisualTheme() {
@@ -1180,20 +1195,19 @@
         }
 
 
-        let cart = [];
-        let currentUser = null;
-        let usersDB = [];
+        let cart = readLocalJSON('mtw_cart', []);
+        let currentUser = readLocalJSON('mtw_active_user', null);
+        let usersDB = readLocalJSON('mtw_users', []);
 
-        try {
-            const savedCart = localStorage.getItem('mtw_cart');
-            if (savedCart) cart = JSON.parse(savedCart);
-            
-            const savedUsers = localStorage.getItem('mtw_users');
-            if (savedUsers) usersDB = JSON.parse(savedUsers);
-            
-            const activeUser = localStorage.getItem('mtw_active_user');
-            if (activeUser) currentUser = JSON.parse(activeUser);
-        } catch(e) {}
+        // A few ops-driven rules that came from the shop team so checkout feels less "demo-ish".
+        const lineItemCaps = {
+            monthly: 2,
+            'one-off': 5
+        };
+        const deliverySurcharges = {
+            standard: 0,
+            priority: 9.99
+        };
 
         function showToast(message, icon = 'check') {
             const container = document.getElementById('toast-container');
@@ -1206,13 +1220,18 @@
         }
 
         function saveCart() {
-            try { localStorage.setItem('mtw_cart', JSON.stringify(cart)); } catch(e){}
+            writeLocalJSON('mtw_cart', cart);
             updateCartUI();
         }
 
         function addToCart(id, name, price, image, type) {
             const existing = cart.find(item => item.id === id);
+            const cap = lineItemCaps[type] ?? 3;
             if(existing) {
+                if (existing.quantity >= cap) {
+                    showToast(`Max ${cap} units allowed for ${type === 'monthly' ? 'monthly plans' : 'one-off items'}.`, 'info');
+                    return;
+                }
                 existing.quantity += 1;
             } else {
                 cart.push({ id, name, price, image, type, quantity: 1 });
@@ -1229,7 +1248,13 @@
         function updateQuantity(id, change) {
             const item = cart.find(item => item.id === id);
             if(item) {
-                item.quantity += change;
+                const cap = lineItemCaps[item.type] ?? 3;
+                const nextValue = item.quantity + change;
+                if (nextValue > cap) {
+                    showToast(`You can only take ${cap} of this item type.`, 'alert-triangle');
+                    return;
+                }
+                item.quantity = nextValue;
                 if(item.quantity <= 0) removeFromCart(id);
                 else saveCart();
             }
@@ -1287,7 +1312,8 @@
 
             document.getElementById('cart-oneoff-total').innerText = `£${oneOffTotal.toLocaleString()}`;
             document.getElementById('cart-monthly-total').innerText = `£${monthlyTotal.toLocaleString()}/mo`;
-            const dueToday = oneOffTotal + monthlyTotal;
+            const shipping = oneOffTotal > 0 ? deliverySurcharges.priority : deliverySurcharges.standard;
+            const dueToday = oneOffTotal + monthlyTotal + shipping;
             document.getElementById('cart-final-total').innerText = `£${dueToday.toLocaleString()}`;
             document.getElementById('checkout-total-btn').innerText = `£${dueToday.toLocaleString()}`;
         }
@@ -1379,9 +1405,22 @@
 
         function handleSignup(e) {
             e.preventDefault();
-            const name = document.getElementById('signup-name').value;
-            const email = document.getElementById('signup-email').value;
+            const name = document.getElementById('signup-name').value.trim();
+            const email = document.getElementById('signup-email').value.trim().toLowerCase();
             const pass = document.getElementById('signup-pass').value;
+
+            if (name.length < 2) {
+                alert('Please enter your full name.');
+                return;
+            }
+            if (!email.includes('@') || email.length < 6) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            if (pass.length < 8) {
+                alert('Password must be at least 8 characters long.');
+                return;
+            }
 
             if(usersDB.find(u => u.email === email)) {
                 alert("Email already exists!");
@@ -1389,10 +1428,8 @@
             }
             usersDB.push({ name, email, pass });
             currentUser = { name, email };
-            try {
-                localStorage.setItem('mtw_users', JSON.stringify(usersDB));
-                localStorage.setItem('mtw_active_user', JSON.stringify(currentUser));
-            } catch(e) {}
+            writeLocalJSON('mtw_users', usersDB);
+            writeLocalJSON('mtw_active_user', currentUser);
             closeAuthModal();
             updateAuthUI();
             showToast("Account created successfully!");
@@ -1401,13 +1438,13 @@
 
         function handleLogin(e) {
             e.preventDefault();
-            const email = document.getElementById('login-email').value;
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
             const pass = document.getElementById('login-pass').value;
 
             const user = usersDB.find(u => u.email === email && u.pass === pass);
             if(user) {
                 currentUser = { name: user.name, email: user.email };
-                try { localStorage.setItem('mtw_active_user', JSON.stringify(currentUser)); } catch(e) {}
+                writeLocalJSON('mtw_active_user', currentUser);
                 closeAuthModal();
                 updateAuthUI();
                 showToast(`Welcome back, ${user.name}!`);
@@ -1419,7 +1456,11 @@
 
         function handleLogout() {
             currentUser = null;
-            try { localStorage.removeItem('mtw_active_user'); } catch(e) {}
+            try {
+                localStorage.removeItem('mtw_active_user');
+            } catch (error) {
+                console.warn('Could not clear active user', error);
+            }
             closeAuthModal();
             updateAuthUI();
             showToast("Logged out successfully");
