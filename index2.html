@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MobileTechWorld</title>
     
-    <!-- Tailwind CSS for rapid styling -->
+    
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Three.js for 3D Background -->
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 
-    <!-- Lucide Icons -->
+    
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Leaflet Maps -->
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
@@ -44,9 +44,7 @@
             --glass-card-bg: rgba(255, 255, 255, 0.66);
         }
 
-        /* ------------------------
-           GLOBAL & CURSOR OVERRIDE
-           ------------------------ */
+        
         body {
             margin: 0;
             padding: 0;
@@ -55,10 +53,10 @@
             color: var(--text-primary);
             overflow-x: hidden;
             scroll-behavior: smooth;
-            cursor: none; /* Hide default cursor */
+            cursor: none; 
         }
 
-        /* Disable text selection across the whole site */
+        
         *, *::before, *::after {
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -66,27 +64,25 @@
             user-select: none;
         }
         
-        /* Hide cursor on all interactive elements to use custom cursor */
+        
         a, button, input, [onclick], .cursor-pointer {
             cursor: none !important;
         }
 
-        /* ------------------------
-           CUSTOM CURSOR STYLES
-           ------------------------ */
+        
         #cursor-inner {
             position: fixed;
             top: 0;
             left: 0;
             width: 8px;
             height: 8px;
-            background-color: #60a5fa; /* Blue-400 */
+            background-color: #60a5fa; 
             border-radius: 50%;
             pointer-events: none;
             z-index: 999999;
             transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
             box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
-            transform: translate(-50%, -50%); /* Handled mostly by JS, but good fallback */
+            transform: translate(-50%, -50%); 
         }
 
         #cursor-outer {
@@ -103,11 +99,11 @@
             transform: translate(-50%, -50%);
         }
 
-        /* Hover states for the cursor */
+        
         #cursor-inner.hover {
             width: 4px;
             height: 4px;
-            background-color: #c084fc; /* Purple-400 */
+            background-color: #c084fc; 
         }
 
         #cursor-outer.hover {
@@ -118,15 +114,13 @@
             backdrop-filter: blur(2px);
         }
 
-        /* Disable custom cursor on touch devices */
+        
         @media (pointer: coarse) {
             #cursor-inner, #cursor-outer { display: none !important; }
             body, a, button, input, [onclick], .cursor-pointer { cursor: auto !important; }
         }
 
-        /* ------------------------
-           BACKGROUNDS & GLASS
-           ------------------------ */
+        
         #bg-canvas {
             position: fixed;
             top: 0;
@@ -203,7 +197,7 @@
             background: rgba(255, 255, 255, 0.1);
         }
 
-        /* Custom Scrollbar */
+        
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
@@ -212,7 +206,7 @@
         .locations-scroll::-webkit-scrollbar { width: 4px; }
         .locations-scroll::-webkit-scrollbar-thumb { background: rgba(96, 165, 250, 0.5); }
 
-        /* Gradient Text */
+        
         .text-gradient {
             background: linear-gradient(to right, var(--title-grad-a), var(--title-grad-b));
             -webkit-background-clip: text;
@@ -238,7 +232,7 @@
 
         .settings-panel.hidden { display: none; }
 
-        /* Section hiding logic */
+        
         .page-section { display: none; animation: fadeIn 0.5s ease-out forwards; }
         .page-section.active { display: block; }
 
@@ -256,7 +250,7 @@
             -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
         }
 
-        /* Toast Notifications */
+        
         #toast-container {
             position: fixed;
             bottom: 20px;
@@ -289,7 +283,7 @@
 
         .cart-open { transform: translateX(0) !important; }
 
-        /* Leaflet map theme overrides */
+        
         .leaflet-container { background: #0f1016; cursor: none !important; }
         .leaflet-popup-content-wrapper,
         .leaflet-popup-tip {
@@ -308,11 +302,11 @@
 </head>
 <body class="antialiased">
 
-    <!-- Custom Cursor Elements -->
+    
     <div id="cursor-inner"></div>
     <div id="cursor-outer"></div>
 
-    <!-- 3D Environment Elements -->
+    
     <canvas id="bg-canvas"></canvas>
     <div class="ambient-bg"></div>
     <canvas id="particle-canvas"></canvas>
@@ -353,7 +347,7 @@
         </div>
     </aside>
 
-    <!-- Navigation -->
+    
     <nav class="glass-nav fixed top-0 w-full z-50 py-4 px-6 transition-all">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer group" onclick="navigate('home')">
@@ -366,7 +360,7 @@
                 </div>
             </div>
 
-            <!-- Desktop Menu -->
+            
             <div class="hidden md:flex items-center gap-5 lg:gap-6 text-sm font-medium text-gray-300">
                 <button onclick="navigate('home')" class="hover:text-white transition">Home</button>
                 <button onclick="navigate('monthly')" class="hover:text-blue-400 transition">Monthly</button>
@@ -378,19 +372,19 @@
                 
                 <div class="h-6 w-px bg-white/20 mx-1 lg:mx-2"></div>
                 
-                <!-- Auth / User Button -->
+                
                 <button id="nav-auth-btn" onclick="openAuthModal()" class="hover:text-white transition flex items-center gap-2">
                     <i data-lucide="user" class="w-4 h-4"></i> <span id="nav-auth-text">Sign In</span>
                 </button>
                 
-                <!-- Cart Button -->
+                
                 <button onclick="toggleCart()" class="hover:text-white transition relative flex items-center gap-2">
                     <i data-lucide="shopping-cart" class="w-4 h-4"></i>
                     <span id="cart-badge" class="absolute -top-2 -right-2 bg-red-500 text-white text-[0.65rem] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
                 </button>
             </div>
 
-            <!-- Mobile Menu Toggle -->
+            
             <button class="md:hidden text-white flex items-center gap-4">
                 <div onclick="toggleCart()" class="relative">
                     <i data-lucide="shopping-cart" class="w-5 h-5"></i>
@@ -401,10 +395,10 @@
         </div>
     </nav>
 
-    <!-- Main Content Area -->
+    
     <main class="pt-28 pb-20 px-6 max-w-7xl mx-auto min-h-screen">
         
-        <!-- HOME SECTION -->
+        
         <section id="home" class="page-section active">
             <div class="glass-panel rounded-3xl p-8 md:p-16 mb-12 text-center relative overflow-hidden group">
                 <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 opacity-50 group-hover:opacity-100 transition duration-700"></div>
@@ -419,7 +413,7 @@
 
             <h3 class="text-2xl font-semibold mb-6">Choose Your Pick</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-                <!-- Nav Cards -->
+                
                 <div onclick="navigate('monthly')" class="glass-card p-6 flex flex-col items-center justify-center cursor-pointer min-h-[200px] text-center">
                     <div class="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mb-4"><i data-lucide="calendar" class="w-8 h-8 text-blue-400"></i></div>
                     <h4 class="text-xl font-bold mb-2">Monthly Phones</h4>
@@ -442,7 +436,7 @@
                 </div>
             </div>
 
-            <!-- Ad Banner -->
+            
             <div onclick="navigate('accessories')" class="glass-panel rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between cursor-pointer hover:bg-white/5 transition border border-pink-500/30">
                 <div class="mb-6 md:mb-0">
                     <h3 class="text-2xl font-bold mb-2">Featured: AirPods Pro (2nd Gen)</h3>
@@ -454,7 +448,7 @@
             </div>
         </section>
 
-        <!-- MONTHLY PHONES SECTION -->
+        
         <section id="monthly" class="page-section">
             <div class="mb-10 text-center">
                 <h2 class="text-4xl font-bold text-gradient mb-4">Monthly Phones</h2>
@@ -517,7 +511,7 @@
             </div>
         </section>
 
-        <!-- PAYG SECTION -->
+        
         <section id="payg" class="page-section">
             <div class="mb-10 text-center">
                 <h2 class="text-4xl font-bold text-gradient mb-4">Pay-As-You-Go Phones</h2>
@@ -572,7 +566,7 @@
             </div>
         </section>
 
-        <!-- ACCESSORIES SECTION -->
+        
         <section id="accessories" class="page-section">
             <div class="mb-10 text-center">
                 <h2 class="text-4xl font-bold text-gradient mb-4">Premium Accessories</h2>
@@ -607,7 +601,7 @@
             </div>
         </section>
 
-        <!-- LOCATIONS SECTION -->
+        
         <section id="locations" class="page-section">
             <div class="mb-10 text-center">
                 <h2 class="text-4xl font-bold text-gradient mb-4">Our Stores</h2>
@@ -616,7 +610,7 @@
             
             <div class="grid lg:grid-cols-3 gap-6 h-[700px] lg:h-[600px]">
                 <div class="lg:col-span-1 flex flex-col gap-4 overflow-y-auto pr-2 locations-scroll h-full" id="store-list-container">
-                    <!-- Populated dynamically by JS -->
+                    
                 </div>
                 
                 <div class="lg:col-span-2 glass-panel rounded-3xl overflow-hidden relative p-1 h-[400px] lg:h-full group">
@@ -626,7 +620,7 @@
             </div>
         </section>
 
-        <!-- CONTACT SECTION -->
+        
         <section id="contact" class="page-section">
             <div class="mb-10 text-center">
                 <h2 class="text-4xl font-bold text-gradient mb-4">Contact Us</h2>
@@ -681,7 +675,7 @@
             </div>
         </section>
 
-        <!-- ABOUT US SECTION -->
+        
         <section id="about" class="page-section">
             <div class="mb-10 text-center"><h2 class="text-4xl font-bold text-gradient mb-4">About MobileTechWorld</h2></div>
             <div class="glass-panel rounded-3xl p-8 md:p-12 mb-12">
@@ -700,7 +694,7 @@
 
     </main>
 
-    <!-- Cart Sidebar -->
+    
     <div id="cart-sidebar" class="fixed top-0 right-0 w-full md:w-[400px] h-full glass-panel z-[60] transform translate-x-full transition-transform duration-300 flex flex-col border-l border-white/10">
         <div class="p-6 border-b border-white/10 flex justify-between items-center bg-black/20">
             <h2 class="text-2xl font-bold flex items-center gap-2"><i data-lucide="shopping-bag"></i> Your Cart</h2>
@@ -723,7 +717,7 @@
     
     <div id="cart-backdrop" onclick="toggleCart()" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[55] hidden opacity-0 transition-opacity duration-300"></div>
 
-    <!-- Auth Modal -->
+    
     <div id="auth-modal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/60 backdrop-blur-md px-4">
         <div class="glass-card w-full max-w-md p-8 relative">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
@@ -775,7 +769,7 @@
         </div>
     </div>
 
-    <!-- Checkout Modal -->
+    
     <div id="checkout-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/80 backdrop-blur-md px-4 overflow-y-auto py-10">
         <div class="glass-card w-full max-w-2xl p-8 relative my-auto">
             <button onclick="closeCheckout()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
@@ -831,15 +825,13 @@
         </div>
     </div>
 
-    <!-- Toast Container -->
+    
     <div id="toast-container"></div>
 
     <script>
-        // --- Custom Cursor Logic ---
         const cursorInner = document.getElementById('cursor-inner');
         const cursorOuter = document.getElementById('cursor-outer');
         
-        // Track positions
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
         let outerX = mouseX;
@@ -847,23 +839,18 @@
         let innerX = mouseX;
         let innerY = mouseY;
 
-        // Listen for mouse movement
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
         });
 
-        // Render loop for smooth trailing effect
         function renderCursor() {
-            // Inner follows instantly
             innerX = mouseX;
             innerY = mouseY;
             
-            // Outer follows with lerp (linear interpolation) delay
             outerX += (mouseX - outerX) * 0.15;
             outerY += (mouseY - outerY) * 0.15;
 
-            // Apply transforms (using translate3d for hardware acceleration)
             cursorInner.style.transform = `translate3d(${innerX}px, ${innerY}px, 0) translate(-50%, -50%)`;
             cursorOuter.style.transform = `translate3d(${outerX}px, ${outerY}px, 0) translate(-50%, -50%)`;
 
@@ -871,7 +858,6 @@
         }
         renderCursor();
 
-        // Add hover effects globally via event delegation
         document.addEventListener('mouseover', (e) => {
             const interactiveElement = e.target.closest('button, a, input, [onclick], .cursor-pointer');
             if (interactiveElement) {
@@ -889,7 +875,6 @@
         });
 
 
-        // --- Visual Settings ---
         const settings = {
             darkMode: true,
             particlesEnabled: true,
@@ -977,7 +962,6 @@
             }
         });
 
-        // --- Particle Field ---
         const particleCanvas = document.getElementById('particle-canvas');
         const pctx = particleCanvas.getContext('2d');
         let phoneObstacles = [];
@@ -1089,7 +1073,6 @@
 
 
 
-        // --- Core Routing ---
         lucide.createIcons();
         function navigate(pageId) {
             document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
@@ -1104,7 +1087,6 @@
             }
         }
 
-        // --- Store Locations & Leaflet Logic ---
         let isMapLoaded = false;
         let leafletMap;
         let mapMarkers = [];
@@ -1198,7 +1180,6 @@
         }
 
 
-        // --- Application State ---
         let cart = [];
         let currentUser = null;
         let usersDB = [];
@@ -1447,7 +1428,6 @@
         updateCartUI();
         updateAuthUI();
 
-        // --- 3D Scroll Background Logic ---
         const canvas = document.querySelector('#bg-canvas');
         const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
